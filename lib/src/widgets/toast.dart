@@ -46,11 +46,37 @@ class _ToastStyles extends ChangeNotifier {
 class Toast {
   Toast._();
 
+  /// Set the ObjectParser for error handling.
+  /// if return (msg, true) and msg is not empty, the msg will be shown as toast.
+  /// if return (msg, false), the default error parser will be used.
+  static (String, bool) Function(Object err)? _objectParser;
+
+  static void setObjectParser((String, bool) Function(Object err) parser) {
+    if (_objectParser != null) {
+      assert(false, "fallthrough parser already set");
+      return;
+    }
+    _objectParser = parser;
+  }
+
   static void show(String msg, {bool isError = false}) {
     showToastWidget(
       _ToastWidget(text: msg, isError: isError),
       dismissOtherToast: true,
     );
+  }
+
+  static (String, bool) _parseError(Object err) {
+    if (err is String) {
+      return (err, true);
+    }
+    if (err is Error) {
+      return (err.toString(), true);
+    }
+    if (err is Exception) {
+      return (err.toString(), true);
+    }
+    return ('', false);
   }
 
   static void showError(Object? err) {
@@ -61,15 +87,11 @@ class Toast {
       return;
     }
 
-    final String msg;
-    if (err is Error) {
-      msg = err.toString();
-    } else if (err is Exception) {
-      msg = err.toString();
-    } else {
-      msg = "";
+    String msg = '';
+    final (result, ok) = (_objectParser ?? _parseError).call(err);
+    if (!ok || result.isEmpty) {
+      return;
     }
-    if (msg.isEmpty) return;
 
     show(msg, isError: true);
   }
