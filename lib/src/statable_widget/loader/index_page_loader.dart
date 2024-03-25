@@ -39,8 +39,8 @@ abstract class PaginationLoader<T> extends PageLoader<T, IndexPageReq> {
 
   @protected
   @override
-  Future<(List<T>, IndexPageReq?)> fetchData(bool refresh) async {
-    final query = nextPageQuery(refresh);
+  Future<(List<T>, IndexPageReq?)> fetchData(bool refresh, IndexPageReq? before) async {
+    final query = nextPageQuery(refresh, before);
     final data = await fetch(refresh, query);
     _total = data.total;
     return (data.data, query);
@@ -48,12 +48,12 @@ abstract class PaginationLoader<T> extends PageLoader<T, IndexPageReq> {
 
   Future<Pageable<T>> fetch(bool refresh, IndexPageReq req);
 
-  IndexPageReq nextPageQuery(bool refresh) {
+  IndexPageReq nextPageQuery(bool refresh, IndexPageReq? before) {
     int page;
     if (refresh) {
       page = 1;
     } else {
-      page = (currentPage?.page ?? 0) + 1;
+      page = (before?.page ?? 0) + 1;
     }
     return IndexPageReq(limit: limit, page: page);
   }
