@@ -81,7 +81,9 @@ abstract class PageableLoader<T, Page extends PageableReq>
 
     updateProcess(LoaderProcess(LoaderProcessState.start, refresh));
     try {
-      await fetchBeforeRefresh();
+      if (refresh) {
+        await fetchBeforeRefresh();
+      }
 
       final data = await fetch(refresh, getPageQuery(this.data, refresh));
       final list = data.data;
