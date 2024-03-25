@@ -42,6 +42,7 @@ class StatableProvider extends ChangeNotifier {
 }
 
 /// A widget that can be in different states.
+/// If loader is [RefreshableLoader], it will be wrapped with [RefreshWidget].
 class StatableWidget extends StatelessWidget {
   /// Create a [StatableWidget] with [Loadable].
   const StatableWidget({
@@ -54,13 +55,11 @@ class StatableWidget extends StatelessWidget {
     this.header,
     this.footer,
     this.onStateEvent,
-    this.wrapRefresh = false,
-  })  : assert((wrapRefresh && loader is RefreshableLoader) || !wrapRefresh),
-        _builder = builder,
+  })  : _builder = builder,
         _physicsBuilder = null;
 
   /// Create a [StatableWidget] with [RefreshPhysicsBuilder].
-  const StatableWidget.refreshBuild({
+  const StatableWidget.physics({
     super.key,
     required RefreshPhysicsBuilder builder,
     required RefreshableLoader this.loader,
@@ -70,11 +69,9 @@ class StatableWidget extends StatelessWidget {
     this.header,
     this.footer,
     this.onStateEvent,
-  })  : wrapRefresh = true,
-        _builder = null,
+  })  : _builder = null,
         _physicsBuilder = builder;
 
-  final bool wrapRefresh; // 是否包裹下拉刷新
   final StateWidget? stateWidget; // 状态切换
   final WidgetBuilder? _builder;
   final RefreshPhysicsBuilder? _physicsBuilder;
@@ -87,7 +84,6 @@ class StatableWidget extends StatelessWidget {
 
   /// Whether to wrap the [builder] with [RefreshWidget].
   bool _wrapPullToRefresh(Loadable loader) {
-    if (!wrapRefresh) return false;
     return loader is RefreshableLoader && loader.enableRefresh;
   }
 
@@ -135,14 +131,6 @@ class StatableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    assert(() {
-      if (wrapRefresh && loader is! RefreshableLoader) {
-        throw Exception(
-          'Can not use RefreshableLoader with RefreshPhysicsBuilder',
-        );
-      }
-      return true;
-    }());
     return StateSwitchWidget(
       state: loader.value.state,
       error: loader.value.error,
@@ -151,7 +139,7 @@ class StatableWidget extends StatelessWidget {
       header: header,
       onStateEvent: onStateEvent ?? _onStateEvent,
       readyWidgetBuilder: (context) {
-        if (wrapRefresh && loader is RefreshableLoader) {
+        if (loader is RefreshableLoader) {
           return _buildRefresh(context, loader as RefreshableLoader);
         } else {
           return _builder?.call(context) ?? const SizedBox.shrink();
