@@ -144,8 +144,8 @@ class StatableWidget extends StatelessWidget {
       return true;
     }());
     return StateSwitchWidget(
-      state: loader.state,
-      error: loader.error,
+      state: loader.value.state,
+      error: loader.value.error,
       stateWidget: stateWidget,
       wrapPullToRefresh: _wrapPullToRefresh(loader),
       header: header,

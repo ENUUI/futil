@@ -2,12 +2,6 @@ import 'package:futil/src/statable_widget/loader/loader_data.dart';
 import 'loadable.dart';
 
 abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
-  PageLoader({
-    super.notifier,
-    super.enableRefresh,
-    super.enableLoadMore,
-  });
-
   /// 所有数据
   List<T> get allData => _allData;
   final List<T> _allData = [];
@@ -28,8 +22,9 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
 
   @override
   Future<void> load([bool refresh = false]) async {
-    if (loading) return;
+    if (value.state.isLoading) return;
 
+    final state = value.state;
     if (allData.isEmpty) {
       if (state.isEmpty || state.isReady) {
         updateResult(state: LoadingState.reloading);
@@ -65,11 +60,7 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
       ));
       onSuccess(data);
     } catch (e) {
-      updateResult(
-          state: allData.isEmpty
-              ? LoadingState.error
-              : LoadingState.errorAndNotEmpty,
-          error: error);
+      updateResult(state: allData.isEmpty ? LoadingState.error : LoadingState.errorAndNotEmpty, error: e);
       updateProcess(LoaderProcess(LoaderProcessState.failed, refresh));
     }
   }

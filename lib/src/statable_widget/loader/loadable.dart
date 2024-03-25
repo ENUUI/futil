@@ -5,22 +5,16 @@ class ProcessValue extends BaseValueNotifier<LoaderProcess> {
   ProcessValue() : super(const LoaderProcess(LoaderProcessState.none, true));
 }
 
-abstract class Loadable<T> {
-  Loadable({this.notifier});
-
-  final BaseViewModel? notifier;
-
+abstract class Loadable<T> extends BaseViewModel {
   final ProcessValue processValue = ProcessValue();
 
-  T? get data => value.data;
+  LoaderResult<T> get value => _value;
+  LoaderResult<T> _value = LoaderResult<T>(state: LoadingState.init);
 
-  LoadingState get state => value.state;
-
-  Object? get error => value.error;
-
-  bool get loading => value.state.isLoading;
-
+  /// 加载数据
   Future<void> load();
+
+  Future<void> refresh() => load();
 
   void onSuccess(T? data) {}
 
@@ -29,36 +23,24 @@ abstract class Loadable<T> {
   void updateResult({T? data, Object? error, LoadingState? state}) {
     final nextValue = _value.copy(data: data, error: error, state: state);
     _value = nextValue;
-    notifier?.notifyListeners();
-  }
-
-  LoaderResult<T> get value => _value;
-  LoaderResult<T> _value = LoaderResult<T>(state: LoadingState.init);
-
-  void dispose() {
-    processValue.dispose();
+    notifyListeners();
   }
 
   void updateProcess(LoaderProcess process) {
     processValue.value = process;
   }
 
-  Future<void> refresh();
+  @override
+  void dispose() {
+    processValue.dispose();
+    super.dispose();
+  }
 }
 
 abstract class RefreshableLoader<T> extends Loadable<T> {
-  RefreshableLoader({
-    super.notifier,
-    bool? enableRefresh,
-    bool? enableLoadMore,
-  })  : _enableRefresh = enableRefresh,
-        _enableLoadMore = enableLoadMore;
+  bool get enableRefresh => true;
 
-  bool get enableRefresh => _enableRefresh ?? true;
-  final bool? _enableRefresh;
-
-  bool get enableLoadMore => _enableLoadMore ?? true;
-  final bool? _enableLoadMore;
+  bool get enableLoadMore => true;
 
   Future<void> loadMore();
 }

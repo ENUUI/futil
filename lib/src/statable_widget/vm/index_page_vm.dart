@@ -1,20 +1,31 @@
+import 'package:flutter/foundation.dart';
+
 import '../loader/loader_data.dart';
 import '../loader/index_page_loader.dart';
-import 'base_view_model.dart';
 import 'loadable_view_model.dart';
 
 /// 页码分页加载 viewModel
-abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PaginationLoader<T>> implements _PageNotifier<T> {
+abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PaginationLoader<T>>
+    implements _PageDelegate<T> {
   @override
   late final PaginationLoader<T> loader = _PageIndexLoader(
-    notifier: this,
+    this,
     enableRefresh: enableRefresh,
     enableLoadMore: enableLoadMore,
   );
 
-  bool? get enableRefresh => null;
+  @mustCallSuper
+  @override
+  void initialize() {
+    super.initialize();
+    loader.addListener(() {
+      notifyListeners();
+    });
+  }
 
-  bool? get enableLoadMore => null;
+  bool get enableRefresh => true;
+
+  bool get enableLoadMore => true;
 
   List<T> get allData => loader.allData;
 
@@ -50,7 +61,7 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, Paginati
 }
 
 /// 分页加载器
-abstract class _PageNotifier<T> extends BaseViewModel {
+abstract class _PageDelegate<T> {
   Future<void> fetchBeforeRefresh();
 
   Future<Pageable<T>> fetch(bool refresh, IndexPageReq query);
@@ -61,34 +72,38 @@ abstract class _PageNotifier<T> extends BaseViewModel {
 }
 
 /// 分页加载器
-class _PageIndexLoader<T, N extends _PageNotifier<T>> extends PaginationLoader<T> {
-  _PageIndexLoader({
-    required N super.notifier,
-    super.enableRefresh,
-    super.enableLoadMore,
+class _PageIndexLoader<T> extends PaginationLoader<T> {
+  _PageIndexLoader(
+    this._delegate, {
+    this.enableRefresh = true,
+    this.enableLoadMore = true,
   });
 
-  N get _notifier => super.notifier! as N;
+  @override
+  final bool enableRefresh;
+  @override
+  final bool enableLoadMore;
+  final _PageDelegate<T> _delegate;
 
   @override
   Future<void> fetchBeforeRefresh() async {
-    await _notifier.fetchBeforeRefresh();
+    await _delegate.fetchBeforeRefresh();
   }
 
   @override
   Future<Pageable<T>> fetch(bool refresh, IndexPageReq query) {
-    return _notifier.fetch(refresh, query);
+    return _delegate.fetch(refresh, query);
   }
 
   @override
   void onSuccess(List<T>? data) {
     super.onSuccess(data);
-    _notifier.onSuccess(data, allData);
+    _delegate.onSuccess(data, allData);
   }
 
   @override
   void onFailure(Object? error) {
     super.onFailure(error);
-    _notifier.onFailure(error);
+    _delegate.onFailure(error);
   }
 }

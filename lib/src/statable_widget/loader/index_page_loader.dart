@@ -33,14 +33,7 @@ class Pageable<T> {
 }
 
 abstract class PaginationLoader<T> extends PageLoader<T, IndexPageReq> {
-  PaginationLoader({
-    super.notifier,
-    super.enableRefresh,
-    super.enableLoadMore,
-    this.limit = kPageLimit,
-  }) : assert(limit > 0);
-
-  final int limit;
+  int get limit => kPageLimit;
 
   int _total = 0;
 

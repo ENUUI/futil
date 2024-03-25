@@ -1,16 +1,28 @@
+import 'package:flutter/foundation.dart';
+
 import '../loader/loader.dart';
 import '../loader/loader_data.dart';
 import 'base_view_model.dart';
 import 'loadable_view_model.dart';
 
-abstract class RefreshableViewModel<T> extends LoadableViewModel<T, Loader<T>> implements _LoadingVm<T> {
+abstract class RefreshableViewModel<T> extends LoadableViewModel<T, Loader<T>> implements _LoadingDelegate<T> {
   @override
   late final Loader<T> loader = _Loader(
-    notifier: this,
+    this,
     enableRefresh: enableRefresh,
   );
 
-  bool? get enableRefresh => null;
+  @mustCallSuper
+  @override
+  void initialize() {
+    super.initialize();
+
+    loader.addListener(() {
+      notifyListeners();
+    });
+  }
+
+  bool get enableRefresh => true;
 
   void refresh() => load();
 
@@ -30,9 +42,16 @@ abstract class RefreshableViewModel<T> extends LoadableViewModel<T, Loader<T>> i
 
   @override
   void onFailure(Object? error) {}
+
+  @mustCallSuper
+  @override
+  void dispose() {
+    loader.dispose();
+    super.dispose();
+  }
 }
 
-abstract class _LoadingVm<T> extends BaseViewModel {
+abstract class _LoadingDelegate<T> extends BaseViewModel {
   Future<T> fetch();
 
   void onSuccess(T? data) {}
@@ -40,26 +59,29 @@ abstract class _LoadingVm<T> extends BaseViewModel {
   void onFailure(Object? error) {}
 }
 
-class _Loader<T, N extends _LoadingVm<T>> extends Loader<T> {
-  _Loader({
-    required N super.notifier,
-    super.enableRefresh,
+class _Loader<T, N extends _LoadingDelegate<T>> extends Loader<T> {
+  _Loader(
+    this._delegate, {
+    this.enableRefresh = true,
   });
 
-  N get _notifier => super.notifier as N;
+  @override
+  final bool enableRefresh;
+
+  final _LoadingDelegate<T> _delegate;
 
   @override
   Future<T> fetch() {
-    return _notifier.fetch();
+    return _delegate.fetch();
   }
 
   @override
   void onSuccess(T? data) {
-    _notifier.onSuccess(data);
+    _delegate.onSuccess(data);
   }
 
   @override
   void onFailure(Object? error) {
-    _notifier.onFailure(error);
+    _delegate.onFailure(error);
   }
 }

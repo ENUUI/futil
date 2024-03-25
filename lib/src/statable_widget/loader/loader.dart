@@ -6,14 +6,14 @@ import 'loadable.dart';
 import 'loader_data.dart';
 
 abstract class Loader<T> extends RefreshableLoader<T> {
-  Loader({
-    super.notifier,
-    super.enableRefresh,
-  }) : super(enableLoadMore: false);
+  @protected
+  @override
+  bool get enableLoadMore => false;
 
   @override
   Future<void> load() async {
-    if (loading) return;
+    final state = value.state;
+    if (state.isLoading) return;
     if (state.isInit || state.isError) {
       updateResult(state: LoadingState.loading);
     }
