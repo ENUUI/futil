@@ -11,14 +11,14 @@ import 'refresh/widgets.dart';
 export 'loader/loadable.dart';
 export 'loader/loader_data.dart';
 export 'loader/loader.dart';
-export 'loader/page_loader.dart';
+export 'loader/index_page_loader.dart';
 
 export 'refresh/refresh_widget.dart';
 export 'refresh/state_switch.dart';
 export 'refresh/widgets.dart';
 
 export 'vm/base_view_model.dart';
-export 'vm/load_widget_model.dart';
+export 'vm/loadable_view_model.dart';
 
 /// A provider that provides [RefreshHeader], [RefreshFooter] and [StateWidget].
 class StatableProvider extends ChangeNotifier {

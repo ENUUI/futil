@@ -5,17 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'loadable.dart';
 import 'loader_data.dart';
 
-
-class Loader<T> extends RefreshableLoader<T> {
-  Loader(
-    this._fetch, {
-    this.onCompletion,
+abstract class Loader<T> extends RefreshableLoader<T> {
+  Loader({
     super.notifier,
     super.enableRefresh,
   }) : super(enableLoadMore: false);
-
-  final Future<T> Function() _fetch;
-  final void Function(bool success, T? data, Object? error)? onCompletion;
 
   @override
   Future<void> load() async {
@@ -25,7 +19,7 @@ class Loader<T> extends RefreshableLoader<T> {
     }
     updateProcess(const LoaderProcess(LoaderProcessState.start, true));
     try {
-      final data = await _fetch.call();
+      final data = await fetch();
       updateResult(data: data, state: LoadingState.ready);
       updateProcess(const LoaderProcess(LoaderProcessState.success, true));
       onSuccess(data);
@@ -36,24 +30,16 @@ class Loader<T> extends RefreshableLoader<T> {
     }
   }
 
+  Future<T> fetch();
+
   @override
   Future<void> refresh() {
     return load();
   }
 
+  @protected
   @override
-  Future<void> loadMore() async {}
-
-  @mustCallSuper
-  @override
-  void onSuccess(T? data) {
-    super.onSuccess(data);
-    onCompletion?.call(true, data, null);
-  }
-
-  @override
-  void onFailure(Object? error) {
-    super.onFailure(error);
-    onCompletion?.call(false, null, error);
+  Future<void> loadMore() async {
+    assert(false, 'loadMore is not supported');
   }
 }
