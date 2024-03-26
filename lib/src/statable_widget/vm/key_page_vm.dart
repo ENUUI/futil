@@ -35,6 +35,9 @@ abstract class KeyPageViewModel<T> extends LoadableViewModel<List<T>, PageByKeyL
   }
 
   @override
+  Future<Kpd<T>> fetch(bool refresh, PKey query);
+
+  @override
   Future<void> beforeFetch() async {}
 
   @override

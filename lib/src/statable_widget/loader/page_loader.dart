@@ -41,7 +41,7 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
         await fetchBeforeRefresh();
       }
 
-      final (data, page) = await fetchData(refresh, _currentPage);
+      final (data, page) = await fetchData(refresh, nextPage(refresh, _currentPage));
       _currentPage = page;
 
       // 跟新数据; 刷新时清空数据;
@@ -67,8 +67,10 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
   }
 
   /// 分页数据，与分页参数
-  Future<(List<T>, P?)> fetchData(bool refresh, P? before);
+  Future<(List<T>, P?)> fetchData(bool refresh, P p);
 
   /// 刷新前的操作。每次刷新都会调用
   Future<void> fetchBeforeRefresh() async {}
+
+  P nextPage(bool refresh, P? p);
 }
