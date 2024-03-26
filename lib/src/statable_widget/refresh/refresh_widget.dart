@@ -1,10 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
-import '../loader/loadable.dart';
-import '../loader/loader_data.dart';
 import '../statable_widget.dart';
-import 'widgets.dart';
 
 ///
 typedef RefreshPhysicsBuilder = Widget Function(

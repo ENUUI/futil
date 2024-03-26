@@ -1,6 +1,8 @@
 import 'package:futil/src/statable_widget/loader/loader_data.dart';
 import 'loadable.dart';
 
+const int kPageLimit = 20;
+
 abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
   /// 所有数据
   List<T> get allData => _allData;
@@ -53,7 +55,7 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
         updateResult(state: LoadingState.ready, data: data);
       }
 
-      final bool noMore = !noMoreData(data.length, page);
+      final bool noMore = noMoreData(refresh, data.length, page);
       updateProcess(LoaderProcess(
         noMore ? LoaderProcessState.noMore : LoaderProcessState.success,
         refresh,
@@ -66,7 +68,7 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
   }
 
   /// 简单以长度判断是否有更多，子类可重写
-  bool noMoreData(int length, P? page) {
+  bool noMoreData(bool refresh, int length, P? page) {
     return length == 0;
   }
 

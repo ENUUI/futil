@@ -1,5 +1,4 @@
 import '../loader/loadable.dart';
-import '../loader/loader.dart';
 import '../loader/loader_data.dart';
 import 'base_view_model.dart';
 

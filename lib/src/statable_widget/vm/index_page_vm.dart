@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 import '../loader/loader_data.dart';
-import '../loader/index_page_loader.dart';
+import '../loader/page_by_index.dart';
 import 'loadable_view_model.dart';
 
 /// 页码分页加载 viewModel
-abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PaginationLoader<T>>
+abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIndexLoader<T>>
     implements _PageDelegate<T> {
   @override
-  late final PaginationLoader<T> loader = _PageIndexLoader(
+  late final PageByIndexLoader<T> loader = _PageIndexLoader(
     this,
     enableRefresh: enableRefresh,
     enableLoadMore: enableLoadMore,
@@ -30,7 +30,7 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, Paginati
   List<T> get allData => loader.allData;
 
   /// 当前页参数
-  IndexPageReq? get currentPage => loader.currentPage;
+  PageIndex? get currentPage => loader.currentPage;
 
   @override
   LoaderResult<List<T>> get value => loader.value;
@@ -45,7 +45,7 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, Paginati
   Future<void> beforeFetch() async {}
 
   @override
-  Future<Pageable<T>> fetch(bool refresh, IndexPageReq query);
+  Future<Pageable<T>> fetch(bool refresh, PageIndex query);
 
   @override
   void dispose() {
@@ -64,7 +64,7 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, Paginati
 abstract class _PageDelegate<T> {
   Future<void> fetchBeforeRefresh();
 
-  Future<Pageable<T>> fetch(bool refresh, IndexPageReq query);
+  Future<Pageable<T>> fetch(bool refresh, PageIndex query);
 
   void onSuccess(List<T>? data, List<T> allData);
 
@@ -72,7 +72,7 @@ abstract class _PageDelegate<T> {
 }
 
 /// 分页加载器
-class _PageIndexLoader<T> extends PaginationLoader<T> {
+class _PageIndexLoader<T> extends PageByIndexLoader<T> {
   _PageIndexLoader(
     this._delegate, {
     this.enableRefresh = true,
@@ -91,7 +91,7 @@ class _PageIndexLoader<T> extends PaginationLoader<T> {
   }
 
   @override
-  Future<Pageable<T>> fetch(bool refresh, IndexPageReq query) {
+  Future<Pageable<T>> fetch(bool refresh, PageIndex query) {
     return _delegate.fetch(refresh, query);
   }
 

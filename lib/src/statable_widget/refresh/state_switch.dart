@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
-import '../loader/loader_data.dart';
 import '../statable_widget.dart';
-import 'widgets.dart';
 
 typedef StateEventCallback = FutureOr<void> Function(
     LoadingState, Object? extra);
