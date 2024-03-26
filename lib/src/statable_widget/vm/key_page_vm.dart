@@ -19,6 +19,11 @@ abstract class KeyPageViewModel<T> extends LoadableViewModel<List<T>, PageByKeyL
     });
   }
 
+  @override
+  Future<void> load() {
+    return loader.load();
+  }
+
   bool get enableRefresh => true;
 
   bool get enableLoadMore => true;
