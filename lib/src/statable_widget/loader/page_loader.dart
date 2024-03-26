@@ -23,7 +23,7 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
   }
 
   @override
-  Future<void> load([bool refresh = false]) async {
+  Future<void> load([bool refresh = true]) async {
     if (value.state.isLoading) return;
 
     final state = value.state;
