@@ -43,16 +43,17 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
       final (data, page) = await fetchData(refresh, next);
       _page = page;
 
-      // 跟新数据; 刷新时清空数据;
-      _allData = <T>[if (!refresh) ..._allData, ...data];
-      final nextState = _allData.isEmpty ? LoadingState.empty : LoadingState.ready;
-      updateResult(state: nextState, data: _allData);
-
       final bool noMore = noMoreData(refresh, data.length, page);
       updateProcess(LoaderProcess(
         noMore ? LoaderProcessState.noMore : LoaderProcessState.success,
         refresh,
       ));
+
+      // 跟新数据; 刷新时清空数据;
+      _allData = <T>[if (!refresh) ..._allData, ...data];
+      final nextState = _allData.isEmpty ? LoadingState.empty : LoadingState.ready;
+      updateResult(state: nextState, data: _allData);
+
       onSuccess(data);
     } catch (e) {
       updateResult(state: allData.isEmpty ? LoadingState.error : LoadingState.errorAndNotEmpty, error: e);
