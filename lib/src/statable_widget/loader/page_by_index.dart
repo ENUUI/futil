@@ -4,15 +4,15 @@ import 'package:flutter/foundation.dart';
 
 import 'page_loader.dart';
 
-class PageIndex {
-  PageIndex({required this.limit, required this.page});
+class PIndex {
+  PIndex({required this.limit, required this.page});
 
   final int limit;
   final int page;
 }
 
-class Pageable<T> {
-  Pageable({
+class Ipd<T> {
+  Ipd({
     this.total = 0,
     this.page = 0,
     this.limit = 0,
@@ -25,34 +25,34 @@ class Pageable<T> {
   final List<T> data;
 }
 
-abstract class PageByIndexLoader<T> extends PageLoader<T, PageIndex> {
+abstract class PageByIndexLoader<T> extends PageLoader<T, PIndex> {
   int get limit => kPageLimit;
 
   int _total = 0;
 
   @protected
   @override
-  Future<(List<T>, PageIndex?)> fetchData(bool refresh, PageIndex? before) async {
+  Future<(List<T>, PIndex?)> fetchData(bool refresh, PIndex? before) async {
     final query = nextPageQuery(refresh, before);
     final data = await fetch(refresh, query);
     _total = data.total;
     return (data.data, query);
   }
 
-  Future<Pageable<T>> fetch(bool refresh, PageIndex req);
+  Future<Ipd<T>> fetch(bool refresh, PIndex req);
 
-  PageIndex nextPageQuery(bool refresh, PageIndex? before) {
+  PIndex nextPageQuery(bool refresh, PIndex? before) {
     int page;
     if (refresh) {
       page = 1;
     } else {
       page = (before?.page ?? 0) + 1;
     }
-    return PageIndex(limit: limit, page: page);
+    return PIndex(limit: limit, page: page);
   }
 
   @override
-  bool noMoreData(bool refresh, int length, PageIndex? page) {
+  bool noMoreData(bool refresh, int length, PIndex? page) {
     if (_total > 0 && _total <= allData.length) {
       return true;
     }

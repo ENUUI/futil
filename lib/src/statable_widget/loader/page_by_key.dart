@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:futil/src/statable_widget/loader/page_loader.dart';
 
-class PageKey {
-  PageKey({this.limit = kPageLimit, this.next});
+class PKey {
+  PKey({this.limit = kPageLimit, this.next});
 
   final int limit;
   final Object? next;
 }
 
-class PageKeyData<T> {
-  PageKeyData({
+class Kpd<T> {
+  Kpd({
     this.next,
     this.data = const [],
   });
@@ -18,29 +18,29 @@ class PageKeyData<T> {
   final List<T> data;
 }
 
-abstract class PageByKeyLoader<T> extends PageLoader<T, PageKey> {
+abstract class PageByKeyLoader<T> extends PageLoader<T, PKey> {
   int get limit => kPageLimit;
 
   @protected
   @override
-  Future<(List<T>, PageKey?)> fetchData(bool refresh, PageKey? before) {
+  Future<(List<T>, PKey?)> fetchData(bool refresh, PKey? before) {
     final query = nextPageQuery(refresh, before);
     return fetch(refresh, query).then((data) {
       return (data.data, query);
     });
   }
 
-  Future<PageKeyData<T>> fetch(bool refresh, PageKey req);
+  Future<Kpd<T>> fetch(bool refresh, PKey req);
 
-  PageKey nextPageQuery(bool refresh, PageKey? before) {
+  PKey nextPageQuery(bool refresh, PKey? before) {
     if (refresh) {
-      return PageKey(limit: limit);
+      return PKey(limit: limit);
     }
-    return PageKey(limit: limit, next: before?.next);
+    return PKey(limit: limit, next: before?.next);
   }
 
   @override
-  bool noMoreData(bool refresh, int length, PageKey? page) {
+  bool noMoreData(bool refresh, int length, PKey? page) {
     if (!refresh) {
       if (page == null || page.next == null) {
         return true;

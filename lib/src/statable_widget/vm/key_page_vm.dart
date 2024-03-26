@@ -54,7 +54,7 @@ abstract class KeyPageViewModel<T> extends LoadableViewModel<List<T>, PageByKeyL
 abstract class _PageDelegate<T> {
   Future<void> beforeFetch();
 
-  Future<PageKeyData<T>> fetch(bool refresh, PageKey query);
+  Future<Kpd<T>> fetch(bool refresh, PKey query);
 
   void onSuccess(List<T>? data, List<T> allData);
 
@@ -76,7 +76,7 @@ class _PageKeyLoader<T> extends PageByKeyLoader<T> {
   }
 
   @override
-  Future<PageKeyData<T>> fetch(bool refresh, PageKey req) {
+  Future<Kpd<T>> fetch(bool refresh, PKey req) {
     return _delegate.fetch(refresh, req);
   }
 

@@ -40,7 +40,7 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIn
   Future<void> beforeFetch() async {}
 
   @override
-  Future<Pageable<T>> fetch(bool refresh, PageIndex query);
+  Future<Ipd<T>> fetch(bool refresh, PIndex query);
 
   @override
   void dispose() {
@@ -59,7 +59,7 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIn
 abstract class _PageDelegate<T> {
   Future<void> beforeFetch();
 
-  Future<Pageable<T>> fetch(bool refresh, PageIndex query);
+  Future<Ipd<T>> fetch(bool refresh, PIndex query);
 
   void onSuccess(List<T>? data, List<T> allData);
 
@@ -86,7 +86,7 @@ class _PageIndexLoader<T> extends PageByIndexLoader<T> {
   }
 
   @override
-  Future<Pageable<T>> fetch(bool refresh, PageIndex query) {
+  Future<Ipd<T>> fetch(bool refresh, PIndex query) {
     return _delegate.fetch(refresh, query);
   }
 
