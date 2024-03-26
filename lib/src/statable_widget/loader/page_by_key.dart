@@ -20,7 +20,7 @@ class Kpd<T> {
 abstract class PageByKeyLoader<T> extends PageLoader<T, PKey> {
   @protected
   @override
-  Future<(List<T>, PKey?)> fetchData(bool refresh, PKey p) {
+  Future<(List<T>, PKey)> fetchData(bool refresh, PKey p) {
     return fetch(refresh, p).then((data) {
       return (data.data, PKey(next: data.next));
     });
@@ -31,17 +31,16 @@ abstract class PageByKeyLoader<T> extends PageLoader<T, PKey> {
     if (refresh) {
       return PKey(next: null);
     }
+    assert(p?.next != null);
     return PKey(next: p?.next);
   }
 
   Future<Kpd<T>> fetch(bool refresh, PKey req);
 
   @override
-  bool noMoreData(bool refresh, int length, PKey? page) {
-    if (!refresh) {
-      if (page == null || page.next == null) {
-        return true;
-      }
+  bool noMoreData(bool refresh, int length, PKey page) {
+    if (page.next == null) {
+      return true;
     }
     return super.noMoreData(refresh, length, page);
   }

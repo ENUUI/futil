@@ -32,7 +32,7 @@ abstract class PageByIndexLoader<T> extends PageLoader<T, PIndex> {
 
   @protected
   @override
-  Future<(List<T>, PIndex?)> fetchData(bool refresh, PIndex p) async {
+  Future<(List<T>, PIndex)> fetchData(bool refresh, PIndex p) async {
     final data = await fetch(refresh, p);
     _total = data.total;
     return (data.data, p);
@@ -49,12 +49,12 @@ abstract class PageByIndexLoader<T> extends PageLoader<T, PIndex> {
   Future<Ipd<T>> fetch(bool refresh, PIndex req);
 
   @override
-  bool noMoreData(bool refresh, int length, PIndex? page) {
+  bool noMoreData(bool refresh, int length, PIndex page) {
     if (_total > 0 && _total <= allData.length) {
       return true;
     }
 
-    if (page != null && length < page.limit) {
+    if (length < page.limit) {
       return true;
     }
 

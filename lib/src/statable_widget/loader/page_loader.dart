@@ -9,8 +9,7 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
   List<T> _allData = <T>[];
 
   /// 当前页的参数
-  P? get currentPage => _currentPage;
-  P? _currentPage;
+  P? _page;
 
   @override
   Future<void> refresh() {
@@ -40,9 +39,9 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
       if (refresh) {
         await fetchBeforeRefresh();
       }
-
-      final (data, page) = await fetchData(refresh, nextPage(refresh, _currentPage));
-      _currentPage = page;
+      final next = nextPage(refresh, _page);
+      final (data, page) = await fetchData(refresh, next);
+      _page = page;
 
       // 跟新数据; 刷新时清空数据;
       _allData = <T>[if (!refresh) ..._allData, ...data];
@@ -62,12 +61,12 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
   }
 
   /// 简单以长度判断是否有更多，子类可重写
-  bool noMoreData(bool refresh, int length, P? page) {
+  bool noMoreData(bool refresh, int length, P page) {
     return length == 0;
   }
 
   /// 分页数据，与分页参数
-  Future<(List<T>, P?)> fetchData(bool refresh, P p);
+  Future<(List<T>, P)> fetchData(bool refresh, P p);
 
   /// 刷新前的操作。每次刷新都会调用
   Future<void> fetchBeforeRefresh() async {}
