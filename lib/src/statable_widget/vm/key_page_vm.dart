@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:futil/src/statable_widget/loader/loader_data.dart';
 import 'package:futil/src/statable_widget/loader/page_by_key.dart';
 
@@ -11,12 +12,21 @@ abstract class KeyPageViewModel<T> extends LoadableViewModel<List<T>, PageByKeyL
     enableLoadMore: enableLoadMore,
   );
 
+  bool get enableRefresh => true;
+
+  bool get enableLoadMore => true;
+
+  /// 所有数据；不要直接操作该数据，使用 [loader.updateResult] 方法
+  List<T> get allData => value.data ?? <T>[];
+
+  @override
+  LoaderResult<List<T>> get value => loader.value;
+
+  @mustCallSuper
   @override
   void initialize() {
     super.initialize();
-    loader.addListener(() {
-      notifyListeners();
-    });
+    loader.addListener(() => notifyListeners());
   }
 
   @override
@@ -24,26 +34,25 @@ abstract class KeyPageViewModel<T> extends LoadableViewModel<List<T>, PageByKeyL
     return loader.load();
   }
 
-  bool get enableRefresh => true;
-
-  bool get enableLoadMore => true;
-
   @override
-  LoaderResult<List<T>> get value => loader.value;
-
-  @override
-  Future<void> fetchBeforeRefresh() async {}
+  Future<void> beforeFetch() async {}
 
   @override
   void onFailure(Object? error) {}
 
   @override
   void onSuccess(List? data, List allData) {}
+
+  @override
+  void dispose() {
+    loader.dispose();
+    super.dispose();
+  }
 }
 
 /// 分页加载器
 abstract class _PageDelegate<T> {
-  Future<void> fetchBeforeRefresh();
+  Future<void> beforeFetch();
 
   Future<PageKeyData<T>> fetch(bool refresh, PageKey query);
 
@@ -63,7 +72,7 @@ class _PageKeyLoader<T> extends PageByKeyLoader<T> {
 
   @override
   Future<void> fetchBeforeRefresh() {
-    return _delegate.fetchBeforeRefresh();
+    return _delegate.beforeFetch();
   }
 
   @override

@@ -4,9 +4,9 @@ import 'loadable.dart';
 const int kPageLimit = 20;
 
 abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
-  /// 所有数据
+  /// 所有数据；不要直接操作该数据，使用[updateResult] 方法更新数据
   List<T> get allData => _allData;
-  final List<T> _allData = [];
+  List<T> _allData = <T>[];
 
   /// 当前页的参数
   P? get currentPage => _currentPage;
@@ -44,16 +44,10 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
       final (data, page) = await fetchData(refresh, _currentPage);
       _currentPage = page;
 
-      if (refresh) {
-        _allData.clear();
-      }
-      allData.addAll(data);
-
-      if (allData.isEmpty) {
-        updateResult(state: LoadingState.empty, data: data);
-      } else {
-        updateResult(state: LoadingState.ready, data: data);
-      }
+      // 跟新数据; 刷新时清空数据;
+      _allData = <T>[if (!refresh) ..._allData, ...data];
+      final nextState = _allData.isEmpty ? LoadingState.empty : LoadingState.ready;
+      updateResult(state: nextState, data: _allData);
 
       final bool noMore = noMoreData(refresh, data.length, page);
       updateProcess(LoaderProcess(

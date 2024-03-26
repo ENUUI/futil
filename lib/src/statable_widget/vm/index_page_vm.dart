@@ -14,34 +14,29 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIn
     enableLoadMore: enableLoadMore,
   );
 
-  @mustCallSuper
-  @override
-  void initialize() {
-    super.initialize();
-    loader.addListener(() {
-      notifyListeners();
-    });
-  }
-
   bool get enableRefresh => true;
 
   bool get enableLoadMore => true;
 
-  List<T> get allData => loader.allData;
-
-  /// 当前页参数
-  PageIndex? get currentPage => loader.currentPage;
+  /// 所有数据；不要直接操作该数据，使用 [loader.updateResult] 方法
+  List<T> get allData => value.data ?? <T>[];
 
   @override
   LoaderResult<List<T>> get value => loader.value;
 
-  void refresh() => load();
+  @mustCallSuper
+  @override
+  void initialize() {
+    super.initialize();
+    loader.addListener(() => notifyListeners());
+  }
 
   @override
   Future<void> load() {
     return loader.load(true);
   }
 
+  @override
   Future<void> beforeFetch() async {}
 
   @override
@@ -62,7 +57,7 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIn
 
 /// 分页加载器
 abstract class _PageDelegate<T> {
-  Future<void> fetchBeforeRefresh();
+  Future<void> beforeFetch();
 
   Future<Pageable<T>> fetch(bool refresh, PageIndex query);
 
@@ -87,7 +82,7 @@ class _PageIndexLoader<T> extends PageByIndexLoader<T> {
 
   @override
   Future<void> fetchBeforeRefresh() async {
-    await _delegate.fetchBeforeRefresh();
+    await _delegate.beforeFetch();
   }
 
   @override
