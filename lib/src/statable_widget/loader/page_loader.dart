@@ -19,7 +19,7 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
 
   @override
   Future<void> loadMore() {
-    return load();
+    return load(false);
   }
 
   @override
