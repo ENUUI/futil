@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
-import '../statable_widget.dart';
+import '../loader/loadable_data.dart';
+import 'provider.dart';
+import 'widgets.dart';
 
-typedef StateEventCallback = FutureOr<void> Function(
-    LoadingState, Object? extra);
+typedef StateEventCallback = FutureOr<void> Function(LoadingState, Object? extra);
 
+/// state wrapper.
 class WidgetState {
   WidgetState._(this.state, this.error, this.onStateEvent);
 
@@ -46,12 +48,12 @@ class StateSwitchWidget extends StatelessWidget {
     final state = this.state;
     final provider = StatableProvider.maybeOf(context);
     final stateWidget = this.stateWidget ?? provider?.stateWidget;
+
+    // 展示非ready状态
     if (state != null && !state.isReady && stateWidget != null) {
-      final widget = stateWidget.build(
-        context,
-        WidgetState._(state, error, onStateEvent),
-      );
+      final widget = stateWidget.build(context, WidgetState._(state, error, onStateEvent));
       if (!wrapPullToRefresh) return widget;
+
       return EasyRefresh(
         header: (header ?? provider?.header)?.build(context),
         child: CustomScrollView(
@@ -68,6 +70,7 @@ class StateSwitchWidget extends StatelessWidget {
         },
       );
     }
+
     return readyWidgetBuilder(context);
   }
 }

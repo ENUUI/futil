@@ -1,13 +1,13 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
-import '../statable_widget.dart';
+import '../loader/loadable.dart';
+import '../loader/loadable_data.dart';
+import 'provider.dart';
+import 'widgets.dart';
 
 ///
-typedef RefreshPhysicsBuilder = Widget Function(
-  BuildContext context,
-  ScrollPhysics physics,
-);
+typedef RefreshPhysicsBuilder = Widget Function(BuildContext context, ScrollPhysics physics);
 
 /// Refresh widget.
 class RefreshWidget extends StatefulWidget {
@@ -64,8 +64,7 @@ class _RefreshWidgetState extends State<RefreshWidget> {
   @override
   void didUpdateWidget(covariant RefreshWidget oldWidget) {
     final nextRefreshController = widget.refreshController;
-    if (nextRefreshController != null &&
-        refreshController != nextRefreshController) {
+    if (nextRefreshController != null && refreshController != nextRefreshController) {
       refreshController = nextRefreshController;
     }
 

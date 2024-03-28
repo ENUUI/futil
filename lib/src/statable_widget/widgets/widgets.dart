@@ -87,16 +87,13 @@ class RefreshFooter {
 }
 
 /// Pull icon widget builder.
-typedef CIPullIconBuilder = Widget Function(
-    BuildContext context, IndicatorState state, double animation);
+typedef CIPullIconBuilder = Widget Function(BuildContext context, IndicatorState state, double animation);
 
 /// Text widget builder.
-typedef CITextBuilder = Widget Function(
-    BuildContext context, IndicatorState state, String text);
+typedef CITextBuilder = Widget Function(BuildContext context, IndicatorState state, String text);
 
 /// Message widget builder.
-typedef CIMessageBuilder = Widget Function(
-    BuildContext context, IndicatorState state, String text, DateTime dateTime);
+typedef CIMessageBuilder = Widget Function(BuildContext context, IndicatorState state, String text, DateTime dateTime);
 
 class _ClassicIndicator extends StatefulWidget {
   final IndicatorState state;
@@ -179,8 +176,7 @@ class _ClassicIndicatorState extends State<_ClassicIndicator> {
     if (_result == IndicatorResult.noMore) {
       iconKey = const ValueKey(IndicatorResult.noMore);
       icon = const SizedBox.shrink();
-    } else if (_mode == IndicatorMode.processed ||
-        _mode == IndicatorMode.done) {
+    } else if (_mode == IndicatorMode.processed || _mode == IndicatorMode.done) {
       if (_result == IndicatorResult.fail) {
         iconKey = const ValueKey(IndicatorResult.fail);
         icon = widget.failureIconBuilder(context);
@@ -221,16 +217,10 @@ class _ClassicIndicatorState extends State<_ClassicIndicator> {
             left: 0,
             right: 0,
             top: _offset < _actualTriggerOffset
-                ? -(_actualTriggerOffset -
-                        _offset +
-                        (_reverse ? _safeOffset : -_safeOffset)) /
-                    2
+                ? -(_actualTriggerOffset - _offset + (_reverse ? _safeOffset : -_safeOffset)) / 2
                 : (!_reverse ? _safeOffset : 0),
-            bottom: _offset < _actualTriggerOffset
-                ? null
-                : (_reverse ? _safeOffset : 0),
-            height:
-                _offset < _actualTriggerOffset ? _actualTriggerOffset : null,
+            bottom: _offset < _actualTriggerOffset ? null : (_reverse ? _safeOffset : 0),
+            height: _offset < _actualTriggerOffset ? _actualTriggerOffset : null,
             child: Center(
               child: _buildVerticalBody(),
             ),
@@ -239,12 +229,8 @@ class _ClassicIndicatorState extends State<_ClassicIndicator> {
           Positioned(
             left: 0,
             right: 0,
-            top: _mainAxisAlignment == MainAxisAlignment.start
-                ? (!_reverse ? _safeOffset : 0)
-                : null,
-            bottom: _mainAxisAlignment == MainAxisAlignment.end
-                ? (_reverse ? _safeOffset : 0)
-                : null,
+            top: _mainAxisAlignment == MainAxisAlignment.start ? (!_reverse ? _safeOffset : 0) : null,
+            bottom: _mainAxisAlignment == MainAxisAlignment.end ? (_reverse ? _safeOffset : 0) : null,
             child: _buildVerticalBody(),
           ),
       ],
@@ -279,14 +265,9 @@ class _ClassicIndicatorState extends State<_ClassicIndicator> {
         if (_mainAxisAlignment == MainAxisAlignment.center)
           Positioned(
             left: _offset < _actualTriggerOffset
-                ? -(_actualTriggerOffset -
-                        _offset +
-                        (_reverse ? _safeOffset : -_safeOffset)) /
-                    2
+                ? -(_actualTriggerOffset - _offset + (_reverse ? _safeOffset : -_safeOffset)) / 2
                 : (!_reverse ? _safeOffset : 0),
-            right: _offset < _actualTriggerOffset
-                ? null
-                : (_reverse ? _safeOffset : 0),
+            right: _offset < _actualTriggerOffset ? null : (_reverse ? _safeOffset : 0),
             top: 0,
             bottom: 0,
             width: _offset < _actualTriggerOffset ? _actualTriggerOffset : null,
@@ -296,12 +277,8 @@ class _ClassicIndicatorState extends State<_ClassicIndicator> {
           ),
         if (_mainAxisAlignment != MainAxisAlignment.center)
           Positioned(
-            left: _mainAxisAlignment == MainAxisAlignment.start
-                ? (!_reverse ? _safeOffset : 0)
-                : null,
-            right: _mainAxisAlignment == MainAxisAlignment.end
-                ? (_reverse ? _safeOffset : 0)
-                : null,
+            left: _mainAxisAlignment == MainAxisAlignment.start ? (!_reverse ? _safeOffset : 0) : null,
+            right: _mainAxisAlignment == MainAxisAlignment.end ? (_reverse ? _safeOffset : 0) : null,
             top: 0,
             bottom: 0,
             child: _buildHorizontalBody(),
@@ -339,16 +316,13 @@ class _ClassicIndicatorState extends State<_ClassicIndicator> {
     double offset = _offset;
     if (widget.state.indicator.infiniteOffset != null &&
         widget.state.indicator.position == IndicatorPosition.locator &&
-        (_mode != IndicatorMode.inactive ||
-            _result == IndicatorResult.noMore)) {
+        (_mode != IndicatorMode.inactive || _result == IndicatorResult.noMore)) {
       offset = _actualTriggerOffset;
     }
     return SizedBox(
       width: _axis == Axis.vertical ? double.infinity : offset,
       height: _axis == Axis.horizontal ? double.infinity : offset,
-      child: _axis == Axis.vertical
-          ? _buildVerticalWidget()
-          : _buildHorizontalWidget(),
+      child: _axis == Axis.vertical ? _buildVerticalWidget() : _buildHorizontalWidget(),
     );
   }
 }
