@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'page_loader.dart';
 
+/// 分页加载参数
 class PIndex {
   PIndex({required this.limit, required this.page});
 
@@ -11,6 +12,7 @@ class PIndex {
   final int page;
 }
 
+/// 分页加载结果
 class Ipd<T> {
   Ipd({
     this.total = 0,
@@ -25,6 +27,7 @@ class Ipd<T> {
   final List<T> data;
 }
 
+/// 页码分页加载器
 abstract class PageByIndexLoader<T> extends PageLoader<T, PIndex> {
   int get limit => kPageLimit;
 

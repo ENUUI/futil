@@ -37,7 +37,7 @@ class RefreshWidget extends StatefulWidget {
   final RefreshPhysicsBuilder? _physicsBuilder;
   final ScrollController? scrollController;
   final EasyRefreshController? refreshController;
-  final RefreshableLoader refreshableLoader;
+  final RefreshMoreLoader refreshableLoader;
   final RefreshHeader? header;
   final RefreshFooter? footer;
 
@@ -127,8 +127,8 @@ class _RefreshWidgetState extends State<RefreshWidget> {
       return EasyRefresh(
         scrollController: widget.scrollController,
         controller: refreshController,
-        onLoad: loader.enableLoadMore ? loader.loadMore : null,
-        onRefresh: loader.enableRefresh ? loader.refresh : null,
+        onLoad: loader.enablePullLoadMore ? loader.loadMore : null,
+        onRefresh: loader.enablePullRefresh ? loader.refresh : null,
         header: (widget.header ?? provider?.header)?.build(context),
         footer: (widget.footer ?? provider?.footer)?.build(context),
         child: builder(context),
@@ -140,8 +140,8 @@ class _RefreshWidgetState extends State<RefreshWidget> {
       return EasyRefresh.builder(
         scrollController: widget.scrollController,
         controller: refreshController,
-        onLoad: loader.enableLoadMore ? loader.loadMore : null,
-        onRefresh: loader.enableRefresh ? loader.refresh : null,
+        onLoad: loader.enablePullLoadMore ? loader.loadMore : null,
+        onRefresh: loader.enablePullRefresh ? loader.refresh : null,
         header: (widget.header ?? provider?.header)?.build(context),
         footer: (widget.footer ?? provider?.footer)?.build(context),
         childBuilder: (context, physics) {

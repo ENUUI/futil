@@ -1,8 +1,5 @@
-import 'package:flutter/foundation.dart';
-
-import '../loader/loader_data.dart';
 import '../loader/page_by_index.dart';
-import 'loadable_view_model.dart';
+import 'base.dart';
 
 /// 页码分页加载 viewModel
 abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIndexLoader<T>>
@@ -10,8 +7,8 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIn
   @override
   late final PageByIndexLoader<T> loader = _PageIndexLoader(
     this,
-    enableRefresh: enableRefresh,
-    enableLoadMore: enableLoadMore,
+    enablePullRefresh: enableRefresh,
+    enablePullLoadMore: enableLoadMore,
   );
 
   bool get enableRefresh => true;
@@ -22,18 +19,8 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIn
   List<T> get allData => value.data ?? <T>[];
 
   @override
-  LoaderResult<List<T>> get value => loader.value;
-
-  @mustCallSuper
-  @override
-  void initialize() {
-    super.initialize();
-    loader.addListener(() => notifyListeners());
-  }
-
-  @override
   Future<void> load() {
-    return loader.load(true);
+    return loader.load();
   }
 
   @override
@@ -41,12 +28,6 @@ abstract class IndexPageViewModel<T> extends LoadableViewModel<List<T>, PageByIn
 
   @override
   Future<Ipd<T>> fetch(bool refresh, PIndex query);
-
-  @override
-  void dispose() {
-    loader.dispose();
-    super.dispose();
-  }
 
   @override
   void onSuccess(List<T>? data, List<T> allData) {}
@@ -70,14 +51,14 @@ abstract class _PageDelegate<T> {
 class _PageIndexLoader<T> extends PageByIndexLoader<T> {
   _PageIndexLoader(
     this._delegate, {
-    this.enableRefresh = true,
-    this.enableLoadMore = true,
+    this.enablePullRefresh = true,
+    this.enablePullLoadMore = true,
   });
 
   @override
-  final bool enableRefresh;
+  final bool enablePullRefresh;
   @override
-  final bool enableLoadMore;
+  final bool enablePullLoadMore;
   final _PageDelegate<T> _delegate;
 
   @override

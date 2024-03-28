@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:futil/src/statable_widget/loader/page_loader.dart';
 
+/// 分页加载参数
 class PKey {
   PKey({this.next});
 
   final Object? next;
 }
 
+/// 分页加载结果
 class Kpd<T> {
   Kpd({
     this.next,
@@ -17,6 +19,7 @@ class Kpd<T> {
   final List<T> data;
 }
 
+///  Key 分页加载器
 abstract class PageByKeyLoader<T> extends PageLoader<T, PKey> {
   @protected
   @override

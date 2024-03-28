@@ -36,6 +36,7 @@ extension LoadingStateExtra on LoadingState {
   bool get isLoading => this == LoadingState.loading;
 }
 
+/// 加载结果
 class LoaderResult<T> {
   const LoaderResult({
     this.data,
@@ -43,6 +44,7 @@ class LoaderResult<T> {
     required this.state,
   });
 
+  /// 数据; 如果是分页加载, 则为所有数据
   final T? data;
   final Object? error;
   final LoadingState state;

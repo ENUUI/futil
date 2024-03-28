@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'loader/loadable.dart';
-import 'loader/loader_data.dart';
+import 'loader/loadable_data.dart';
 import 'refresh/refresh_widget.dart';
 import 'refresh/state_switch.dart';
 import 'refresh/widgets.dart';
 
 export 'loader/loadable.dart';
 export 'loader/loader.dart';
-export 'loader/loader_data.dart';
+export 'loader/loadable_data.dart';
 export 'loader/page_by_index.dart';
 export 'loader/page_by_key.dart';
 export 'loader/page_loader.dart';
@@ -19,11 +19,9 @@ export 'refresh/refresh_widget.dart';
 export 'refresh/state_switch.dart';
 export 'refresh/widgets.dart';
 
-export 'vm/base_view_model.dart';
-export 'vm/index_page_vm.dart';
-export 'vm/key_page_vm.dart';
-export 'vm/loadable_view_model.dart';
-export 'vm/refreshable_view_model.dart';
+export 'vm/base.dart';
+export 'vm/index_page.dart';
+export 'vm/key_page.dart';
 
 /// A provider that provides [RefreshHeader], [RefreshFooter] and [StateWidget].
 class StatableProvider extends ChangeNotifier {
@@ -47,7 +45,7 @@ class StatableProvider extends ChangeNotifier {
 }
 
 /// A widget that can be in different states.
-/// If loader is [RefreshableLoader], it will be wrapped with [RefreshWidget].
+/// If loader is [RefreshMoreLoader], it will be wrapped with [RefreshWidget].
 class StatableWidget extends StatelessWidget {
   /// Create a [StatableWidget] with [Loadable].
   const StatableWidget({
@@ -67,7 +65,7 @@ class StatableWidget extends StatelessWidget {
   const StatableWidget.physics({
     super.key,
     required RefreshPhysicsBuilder builder,
-    required RefreshableLoader this.loader,
+    required RefreshMoreLoader this.loader,
     this.stateWidget,
     this.scrollController,
     this.refreshController,
@@ -88,8 +86,12 @@ class StatableWidget extends StatelessWidget {
   final StateEventCallback? onStateEvent; // 状态事件
 
   /// Whether to wrap the [builder] with [RefreshWidget].
-  bool _wrapPullToRefresh(Loadable loader) {
-    return loader is RefreshableLoader && loader.enableRefresh;
+  bool _wrapStatePullToRefresh(Loadable loader) {
+    return loader is RefreshMoreLoader && loader.enablePullRefresh;
+  }
+
+  bool _wrapContentPullToRefresh(Loadable loader) {
+    return loader is RefreshMoreLoader && (loader.enablePullLoadMore || loader.enablePullRefresh);
   }
 
   /// The default [onStateEvent] for [StateSwitchWidget].
@@ -97,7 +99,7 @@ class StatableWidget extends StatelessWidget {
     switch (state) {
       case LoadingState.empty:
       case LoadingState.error:
-        return loader.refresh();
+        return loader.load();
       case LoadingState.init:
       case LoadingState.loading:
       case LoadingState.reloading:
@@ -108,7 +110,7 @@ class StatableWidget extends StatelessWidget {
   }
 
   /// Build the [RefreshWidget].
-  Widget _buildRefresh(BuildContext context, RefreshableLoader loader) {
+  Widget _buildRefresh(BuildContext context, RefreshMoreLoader loader) {
     if (_builder != null) {
       return RefreshWidget(
         refreshController: refreshController,
@@ -140,12 +142,12 @@ class StatableWidget extends StatelessWidget {
       state: loader.value.state,
       error: loader.value.error,
       stateWidget: stateWidget,
-      wrapPullToRefresh: _wrapPullToRefresh(loader),
+      wrapPullToRefresh: _wrapStatePullToRefresh(loader),
       header: header,
       onStateEvent: onStateEvent ?? _onStateEvent,
       readyWidgetBuilder: (context) {
-        if (loader is RefreshableLoader) {
-          return _buildRefresh(context, loader as RefreshableLoader);
+        if (_wrapContentPullToRefresh(loader)) {
+          return _buildRefresh(context, loader as RefreshMoreLoader);
         } else {
           return _builder?.call(context) ?? const SizedBox.shrink();
         }

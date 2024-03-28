@@ -1,15 +1,12 @@
-import 'package:flutter/foundation.dart';
-import 'package:futil/src/statable_widget/loader/loader_data.dart';
-import 'package:futil/src/statable_widget/loader/page_by_key.dart';
-
-import 'loadable_view_model.dart';
+import '../loader/page_by_key.dart';
+import 'base.dart';
 
 abstract class KeyPageViewModel<T> extends LoadableViewModel<List<T>, PageByKeyLoader<T>> implements _PageDelegate<T> {
   @override
   late final PageByKeyLoader<T> loader = _PageKeyLoader(
     this,
-    enableRefresh: enableRefresh,
-    enableLoadMore: enableLoadMore,
+    enablePullRefresh: enableRefresh,
+    enablePullLoadMore: enableLoadMore,
   );
 
   bool get enableRefresh => true;
@@ -18,16 +15,6 @@ abstract class KeyPageViewModel<T> extends LoadableViewModel<List<T>, PageByKeyL
 
   /// 所有数据；不要直接操作该数据，使用 [loader.updateResult] 方法
   List<T> get allData => value.data ?? <T>[];
-
-  @override
-  LoaderResult<List<T>> get value => loader.value;
-
-  @mustCallSuper
-  @override
-  void initialize() {
-    super.initialize();
-    loader.addListener(() => notifyListeners());
-  }
 
   @override
   Future<void> load() {
@@ -45,12 +32,6 @@ abstract class KeyPageViewModel<T> extends LoadableViewModel<List<T>, PageByKeyL
 
   @override
   void onSuccess(List? data, List allData) {}
-
-  @override
-  void dispose() {
-    loader.dispose();
-    super.dispose();
-  }
 }
 
 /// 分页加载器
@@ -65,12 +46,12 @@ abstract class _PageDelegate<T> {
 }
 
 class _PageKeyLoader<T> extends PageByKeyLoader<T> {
-  _PageKeyLoader(this._delegate, {this.enableRefresh = true, this.enableLoadMore = true});
+  _PageKeyLoader(this._delegate, {this.enablePullRefresh = true, this.enablePullLoadMore = true});
 
   @override
-  final bool enableRefresh;
+  final bool enablePullRefresh;
   @override
-  final bool enableLoadMore;
+  final bool enablePullLoadMore;
   final _PageDelegate<T> _delegate;
 
   @override

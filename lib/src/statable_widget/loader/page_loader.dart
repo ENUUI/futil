@@ -1,9 +1,12 @@
-import 'package:futil/src/statable_widget/loader/loader_data.dart';
+import 'package:futil/src/statable_widget/loader/loadable_data.dart';
 import 'loadable.dart';
 
 const int kPageLimit = 20;
 
-abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
+/// 分页加载器，继承 [PageLoader] 可以实现分页加载
+/// [T] 分页结果元素的数据类型, [P] 分页参数的数据类型
+/// eg. [PageByIndexLoader] 页码分页加载器，[PageByKeyLoader] key分页加载器
+abstract class PageLoader<T, P> extends RefreshMoreLoader<List<T>> {
   /// 所有数据；不要直接操作该数据，使用[updateResult] 方法更新数据
   List<T> get allData => _allData;
   List<T> _allData = <T>[];
@@ -12,17 +15,15 @@ abstract class PageLoader<T, P> extends RefreshableLoader<List<T>> {
   P? _page;
 
   @override
-  Future<void> refresh() {
-    return load(true);
-  }
+  Future<void> load() => refresh();
 
   @override
-  Future<void> loadMore() {
-    return load(false);
-  }
+  Future<void> refresh() => _load(true);
 
   @override
-  Future<void> load([bool refresh = true]) async {
+  Future<void> loadMore() => _load(false);
+
+  Future<void> _load(bool refresh) async {
     if (value.state.isLoading) return;
 
     final state = value.state;
