@@ -28,7 +28,6 @@ class ImageViewerWidget<T> extends StatefulWidget {
     required this.initIndex,
     this.heroTag,
     this.closeIcon,
-    required this.useRootNavigator,
     this.onPageChanged,
   });
 
@@ -36,7 +35,6 @@ class ImageViewerWidget<T> extends StatefulWidget {
   final int initIndex;
   final Object? heroTag;
   final Widget? closeIcon;
-  final bool useRootNavigator;
   final void Function(int, int)? onPageChanged;
 
   @override

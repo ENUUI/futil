@@ -137,7 +137,6 @@ class _ImageViewerState extends State<ImageViewer> {
       images: widget.images,
       initIndex: initIndex,
       heroTag: widget.heroTag,
-      useRootNavigator: widget.useRootNavigator,
       closeIcon: widget.closeIcon,
       onPageChanged: (index, count) {
         _counter?.setCurrentIndex(index, count);
