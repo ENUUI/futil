@@ -7,42 +7,51 @@ import 'package:extended_image/extended_image.dart';
 
 import '../win.dart';
 
-class ImageViewerOptions<T> {
-  ImageViewerOptions({required this.images, this.initIndex = 0, this.heroTag});
+class ImageViewerOpt extends ChangeNotifier {
+  static ImageViewerOpt? of(BuildContext context) {
+    try {
+      return Provider.of<ImageViewerOpt>(context, listen: false);
+    } catch (e) {
+      return null;
+    }
+  }
 
-  final List<T> images;
-  final int initIndex;
-  final Object? heroTag;
+  ImageViewerOpt({this.loadingIndicator});
+
+  final Widget? loadingIndicator;
 }
 
-class ImageViewer<T> extends StatefulWidget {
-  final List<T> images;
-  final int initIndex;
-  final Object? heroTag;
-  final Widget? closeIcon;
-  final bool useRootNavigator;
-
-  const ImageViewer({
+class ImageViewerWidget<T> extends StatefulWidget {
+  const ImageViewerWidget({
     super.key,
     required this.images,
     required this.initIndex,
     this.heroTag,
     this.closeIcon,
     required this.useRootNavigator,
+    this.onPageChanged,
   });
 
+  final List<T> images;
+  final int initIndex;
+  final Object? heroTag;
+  final Widget? closeIcon;
+  final bool useRootNavigator;
+  final void Function(int, int)? onPageChanged;
+
   @override
-  State<StatefulWidget> createState() => _ImageViewerState();
+  State<StatefulWidget> createState() => _ImageViewerWidgetState();
 }
 
-class _ImageViewerState extends State<ImageViewer> {
+class _ImageViewerWidgetState extends State<ImageViewerWidget> {
   final List<double> doubleTapScales = <double>[1.0, 2.0];
   final imageUrls = <String>[];
   final imageFiles = <File>[];
   int initIndex = 0;
   Object? indexHeroTag;
-  _Counter? _counter;
   late ExtendedPageController _pageController;
+
+  int count = 0;
 
   @override
   void initState() {
@@ -62,30 +71,24 @@ class _ImageViewerState extends State<ImageViewer> {
     indexHeroTag = widget.heroTag;
 
     if (imageUrls.isNotEmpty) {
+      count = imageUrls.length;
       initIndex = min(widget.initIndex, imageUrls.length - 1);
-      _counter = _Counter(initIndex: initIndex, maxCount: imageUrls.length);
     } else if (imageFiles.isNotEmpty) {
+      count = imageFiles.length;
       initIndex = min(widget.initIndex, imageFiles.length - 1);
-      _counter = _Counter(initIndex: initIndex, maxCount: imageFiles.length);
     }
+    _pageController = ExtendedPageController(initialPage: initIndex)..addListener(_onListenPageController);
+    widget.onPageChanged?.call(initIndex, count);
+  }
 
-    if (_counter != null) {
-      _pageController = ExtendedPageController(initialPage: initIndex)..addListener(_onListenPageController);
-    }
+  void _onListenPageController() {
+    widget.onPageChanged?.call(_pageController.page?.round() ?? 0, count);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  void _close() {
-    Navigator.of(context, rootNavigator: widget.useRootNavigator).maybePop();
-  }
-
-  void _onListenPageController() {
-    _counter?.currentIndex = _pageController.page?.round() ?? 0;
   }
 
   void _onDoubleTap(ExtendedImageGestureState state) {
@@ -116,66 +119,6 @@ class _ImageViewerState extends State<ImageViewer> {
     );
   }
 
-  Widget _buildCloseButton() {
-    return GestureDetector(
-      onTap: () {
-        _close();
-      },
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 52.0,
-        width: 44.0,
-        alignment: Alignment.center,
-        child: widget.closeIcon ?? const Icon(Icons.close, size: 16, color: Colors.white),
-      ),
-    );
-  }
-
-  Widget _buildCounter() {
-    return Center(
-      child: ChangeNotifierProvider(
-        create: (_) => _counter,
-        child: const _CounterLabel(),
-      ),
-    );
-  }
-
-  Widget _buildActionNavBar() {
-    final children = <Widget>[];
-
-    children.add(_buildCloseButton());
-
-    if (_counter != null) {
-      children.add(Expanded(child: _buildCounter()));
-    }
-
-    children.add(const SizedBox(width: 44.0));
-    Widget bar = Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: children,
-    );
-
-    final height = 52.0 + Win.statusBar(context);
-
-    bar = Container(
-      height: height,
-      padding: EdgeInsets.only(
-        top: Win.statusBar(context),
-        left: 10.0,
-        right: 10.0,
-      ),
-      alignment: Alignment.bottomCenter,
-      child: bar,
-    );
-
-    return Positioned(
-      top: 0.0,
-      right: 0.0,
-      left: 0.0,
-      child: bar,
-    );
-  }
-
   Widget _buildWebImage(BuildContext context, int index) {
     final url = imageUrls[index];
 
@@ -195,7 +138,6 @@ class _ImageViewerState extends State<ImageViewer> {
         }
 
         if (state.extendedImageLoadState == LoadState.loading) {
-          print('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ${ImageViewerOpt.of(context)}');
           return ImageViewerOpt.of(context)?.loadingIndicator ?? const SizedBox();
         }
 
@@ -262,69 +204,6 @@ class _ImageViewerState extends State<ImageViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF000000),
-      body: GestureDetector(
-        onTap: () {
-          _close();
-        },
-        child: Stack(
-          children: <Widget>[
-            _buildPageView(),
-            _buildActionNavBar(),
-          ],
-        ),
-      ),
-    );
+    return _buildPageView();
   }
-}
-
-class _Counter extends ChangeNotifier {
-  _Counter({int initIndex = 0, required this.maxCount}) : _currentIndex = initIndex;
-
-  final int maxCount;
-
-  int get currentIndex => _currentIndex;
-  int _currentIndex = 0;
-
-  set currentIndex(int newIndex) {
-    if (_currentIndex == newIndex) return;
-
-    _currentIndex = newIndex;
-    notifyListeners();
-  }
-
-  String get indexLabel => '${currentIndex + 1}/$maxCount';
-}
-
-class _CounterLabel extends StatelessWidget {
-  const _CounterLabel();
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<_Counter>(builder: (ctx, model, _) {
-      return Text(
-        model.indexLabel,
-        style: const TextStyle(
-          fontSize: 13,
-          color: Colors.white,
-          decoration: TextDecoration.none,
-        ),
-      );
-    });
-  }
-}
-
-class ImageViewerOpt extends ChangeNotifier {
-  static ImageViewerOpt? of(BuildContext context) {
-    try {
-      return Provider.of<ImageViewerOpt>(context, listen: false);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  ImageViewerOpt({this.loadingIndicator});
-
-  final Widget? loadingIndicator;
 }

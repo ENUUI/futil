@@ -3,7 +3,6 @@ export 'button.dart';
 export 'draggable_dialog.dart';
 export 'error.dart';
 export 'image_editor.dart';
-export 'image_viewer.dart';
 export 'measure_text_size.dart';
 export 'sheet.dart';
 export 'size_changed_notification.dart';
