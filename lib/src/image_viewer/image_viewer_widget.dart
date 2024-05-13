@@ -25,7 +25,7 @@ class ImageViewerWidget<T> extends StatefulWidget {
   const ImageViewerWidget({
     super.key,
     required this.images,
-    required this.initIndex,
+    this.initIndex = 0,
     this.heroTag,
     this.closeIcon,
     this.onPageChanged,
