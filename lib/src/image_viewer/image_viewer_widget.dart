@@ -186,7 +186,8 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
     );
   }
 
-  Widget _buildPageView() {
+  @override
+  Widget build(BuildContext context) {
     Widget child;
 
     if (imageUrls.isNotEmpty) {
@@ -197,11 +198,6 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
       child = Container();
     }
 
-    return Positioned.fill(child: child);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildPageView();
+    return child;
   }
 }

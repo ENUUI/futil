@@ -124,12 +124,7 @@ class _ImageViewerState extends State<ImageViewer> {
       child: bar,
     );
 
-    return Positioned(
-      top: 0.0,
-      right: 0.0,
-      left: 0.0,
-      child: bar,
-    );
+    return bar;
   }
 
   Widget _buildPageView() {
@@ -154,8 +149,13 @@ class _ImageViewerState extends State<ImageViewer> {
         },
         child: Stack(
           children: <Widget>[
-            _buildPageView(),
-            _buildActionNavBar(),
+            Positioned.fill(child: _buildPageView()),
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              child: _buildActionNavBar(),
+            ),
           ],
         ),
       ),
