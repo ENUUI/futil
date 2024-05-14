@@ -26,9 +26,24 @@ class AssetReader {
   /// [destination] 目标目录, 如 '/path/to/file.jpg'
   /// [asset] 资源目录, 如 'assets/images'
   /// return 文件对象
-  Future<File> saveTo(String name, String destination, {String? asset}) async {
+  Future<File> saveTo(String name, String destination, {String? asset, bool force = false}) async {
     if (destination.isEmpty) {
       throw ArgumentError('destination is empty');
+    }
+
+    if (!destination.contains('.')) {
+      throw ArgumentError('destination must contain extension');
+    }
+
+    if (!force) {
+      final file = File(destination);
+      if (await file.exists()) {
+        return file;
+      }
+    }
+
+    if (name.isEmpty) {
+      throw ArgumentError('name is empty');
     }
 
     final data = await byteData(name, asset: asset);
