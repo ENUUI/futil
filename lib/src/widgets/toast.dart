@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 
 import 'space.dart';
 
-class ToastProvider extends ChangeNotifierProvider<_ToastStyles> {
+typedef ToastWidgetBuilder = Widget Function(BuildContext context, ToastStyles styles);
+
+class ToastProvider extends ChangeNotifierProvider<ToastStyles> {
   ToastProvider({
     super.key,
     required Widget child,
@@ -17,20 +19,20 @@ class ToastProvider extends ChangeNotifierProvider<_ToastStyles> {
               movingOnWindowChange: false,
               child: child,
             ),
-            value: _ToastStyles(
+            value: ToastStyles(
               backgroundColor: backgroundColor,
               textStyle: textStyle,
               infoIcon: infoIcon,
               errorIcon: errorIcon,
             ));
 
-  static _ToastStyles _of(BuildContext context) {
-    return Provider.of<_ToastStyles>(context, listen: false);
+  static ToastStyles _of(BuildContext context) {
+    return Provider.of<ToastStyles>(context, listen: false);
   }
 }
 
-class _ToastStyles extends ChangeNotifier {
-  _ToastStyles({
+class ToastStyles extends ChangeNotifier {
+  ToastStyles({
     this.backgroundColor,
     this.textStyle,
     required this.infoIcon,
@@ -95,6 +97,23 @@ class Toast {
 
     show(msg, isError: true);
   }
+
+  static void showWidget(
+    BuildContext context, {
+    required ToastWidgetBuilder builder,
+    Duration duration = const Duration(milliseconds: 2300),
+  }) {
+    showToastWidget(
+      ToastWrap(builder: builder),
+      dismissOtherToast: true,
+      context: context,
+      duration: duration,
+    );
+  }
+
+  static void dismissAll() {
+    dismissAllToast(showAnim: true);
+  }
 }
 
 class _ToastWidget extends StatelessWidget {
@@ -105,48 +124,63 @@ class _ToastWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ToastWrap(
+      builder: (context, styles) {
+        return Center(
+          child: Container(
+            constraints: BoxConstraints(
+              minWidth: 154,
+              maxWidth: MediaQuery.of(context).size.width - 60,
+              minHeight: 87,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+            // alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(16)),
+              color: styles.backgroundColor ?? Theme.of(context).colorScheme.onBackground.withOpacity(.95),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                isError ? styles.errorIcon : styles.infoIcon,
+                const Blank.v(15),
+                Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// [ToastWrap]
+class ToastWrap extends StatelessWidget {
+  const ToastWrap({super.key, required this.builder});
+
+  final ToastWidgetBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
     final styles = ToastProvider._of(context);
-    final themeData = Theme.of(context);
-    final backgroundColor = styles.backgroundColor ??
-        themeData.colorScheme.onBackground.withOpacity(.95);
     final textStyle = styles.textStyle ??
-        themeData.textTheme.bodyMedium?.copyWith(color: Colors.white) ??
-        const TextStyle(fontSize: 14, color: Colors.white);
-    final icon = isError ? styles.errorIcon : styles.infoIcon;
+        Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white) ??
+        const TextStyle(fontSize: 14);
+
     return MediaQuery.removeViewInsets(
       context: context,
       removeBottom: true,
       child: Material(
-          color: Colors.transparent,
-          child: Center(
-            child: Container(
-              constraints: BoxConstraints(
-                minWidth: 154,
-                maxWidth: MediaQuery.of(context).size.width - 60,
-                minHeight: 87,
-              ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
-              // alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(16)),
-                color: backgroundColor,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  icon,
-                  const Blank.v(15),
-                  Text(
-                    text,
-                    style: textStyle,
-                    textAlign: TextAlign.center,
-                    maxLines: 3,
-                  )
-                ],
-              ),
-            ),
-          )),
+        color: Colors.transparent,
+        child: DefaultTextStyle(
+          style: textStyle,
+          child: builder(context, styles),
+        ),
+      ),
     );
   }
 }
