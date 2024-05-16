@@ -13,7 +13,8 @@ dependencies:
   futil_platform_interface:
     git:
       url: https://github.com/ENUUI/futil.git
-      ref: ../futil_platform_interface
+      ref: develop
+      path: ./futil_platform_interface
 
 dev_dependencies:
   flutter_test:

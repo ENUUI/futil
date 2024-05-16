@@ -29,15 +29,18 @@ dependencies:
   futil_platform_interface:
     git:
       url: https://github.com/ENUUI/futil.git
-      ref: ../futil_platform_interface
+      ref: develop
+      path: ./futil_platform_interface
   futil_ios:
     git:
       url: https://github.com/ENUUI/futil.git
-      ref: ../futil_ios
+      ref: develop
+      path: ./futil_ios
   futil_android:
     git:
       url: https://github.com/ENUUI/futil.git
-      ref: ../futil_android
+      ref: develop
+      path: ./futil_android
 
 dev_dependencies:
   flutter_test:
