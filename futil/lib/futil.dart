@@ -1,5 +1,7 @@
 library futil;
 
+export 'plugin/plugin.dart';
+
 export 'src/asset/asset.dart';
 
 export 'src/image_viewer/image_viewer.dart';
