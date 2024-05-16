@@ -26,11 +26,11 @@ dependencies:
   image_picker: ^1.0.7
   path: ">=1.8.2 <2.0.0"
 
-  futil_platform_interface:
-    git:
-      url: https://github.com/ENUUI/futil.git
-      ref: develop
-      path: ./futil_platform_interface
+#  futil_platform_interface:
+#    git:
+#      url: https://github.com/ENUUI/futil.git
+#      ref: develop
+#      path: ./futil_platform_interface
   futil_ios:
     git:
       url: https://github.com/ENUUI/futil.git
@@ -52,7 +52,12 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  plugin:
+    platforms:
+      android:
+        default_package: futil_android
+      ios:
+        default_package: futil_ios
 # To add assets to your package, add an assets section, like this:
 # assets:
 #   - images/a_dot_burr.jpeg
