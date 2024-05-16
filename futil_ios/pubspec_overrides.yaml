@@ -1,3 +1,0 @@
-dependency_overrides:
-  futil_platform_interface:
-    path: ../futil_platform_interface
