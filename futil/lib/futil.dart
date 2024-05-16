@@ -1,6 +1,6 @@
 library futil;
 
-export 'plugin/flt.dart';
+export 'plugin/Ftl.dart';
 
 export 'src/asset/asset.dart';
 
