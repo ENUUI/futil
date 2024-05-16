@@ -1,0 +1,6 @@
+framework module futil_ios {
+  umbrella header "futil_ios-umbrella.h"
+
+  export *
+  module * { export * }
+}
