@@ -1,10 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:futil_platform_interface/futil_platform_interface.dart';
 
 import 'src/messages.g.dart';
 
 class FutilIos extends FtlInterface {
-  final FutilIosApi _hotsApi = FutilIosApi();
+  FutilIos({@visibleForTesting FutilIosApi? api})
+      : _hotsApi = api ?? FutilIosApi();
+  final FutilIosApi _hotsApi;
 
   static void registerWith() {
     FtlInterface.instance = FutilIos();
