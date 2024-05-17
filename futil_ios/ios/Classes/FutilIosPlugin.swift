@@ -4,7 +4,7 @@ import UIKit
 public class FutilIosPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = FutilIosPlugin()
-        MessagesSetup.setUp(binaryMessenger: registrar.messenger(), api: instance)
+        FutilIosApiSetup.setUp(binaryMessenger: registrar.messenger(), api: instance)
     }
 
     lazy var osNameVersion: [String: String] = ["os": UIDevice.current.systemName, "version": UIDevice.current.systemVersion]
@@ -12,7 +12,7 @@ public class FutilIosPlugin: NSObject, FlutterPlugin {
     lazy var venderId: String = UIDevice.current.identifierForVendor?.uuidString ?? ""
 }
 
-extension FutilIosPlugin: Messages {
+extension FutilIosPlugin: FutilIosApi {
     func sdkInt(completion: @escaping (Result<Int64, Error>) -> Void) {
         completion(Result.success(1))
     }
