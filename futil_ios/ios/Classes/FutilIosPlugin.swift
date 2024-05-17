@@ -3,23 +3,30 @@ import UIKit
 
 public class FutilIosPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "github.enuui/futil", binaryMessenger: registrar.messenger())
         let instance = FutilIosPlugin()
-        registrar.addMethodCallDelegate(instance, channel: channel)
+        MessagesSetup.setUp(binaryMessenger: registrar.messenger(), api: instance)
     }
 
-    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        switch call.method {
-        case "os_name_version":
-            result(osNameVersion)
-        case "device_id":
-            result(venderId)
-        default:
-            result(FlutterMethodNotImplemented)
-        }
-    }
-
-    lazy var osNameVersion: OsVersion = .init(os: UIDevice.current.systemName, version: UIDevice.current.systemVersion)
+    lazy var osNameVersion: [String: String] = ["os": UIDevice.current.systemName, "version": UIDevice.current.systemVersion]
 
     lazy var venderId: String = UIDevice.current.identifierForVendor?.uuidString ?? ""
 }
+
+extension FutilIosPlugin: Messages {
+    func sdkInt(completion: @escaping (Result<Int64, Error>) -> Void) {
+        completion(Result.success(1))
+    }
+    
+    func isHarmonyOs(completion: @escaping (Result<Bool, Error>) -> Void) {
+        completion(Result.success(false))
+    }
+    
+    func osVersion(completion: @escaping (Result<[String : String]?, Error>) -> Void) {
+        completion(Result.success(osNameVersion))
+    }
+    
+    func deviceId(completion: @escaping (Result<String, Error>) -> Void) {
+        completion(Result.success(venderId))
+    }
+}
+ 

@@ -93,7 +93,7 @@
     },
     {
       "name": "futil_platform_interface",
-      "rootUri": "../../../futil_platform_interface",
+      "rootUri": "file:///Users/enuui/.pub-cache/git/futil-31c5fbe83508e868d9defecf2a9e77cc31012ed8/futil_platform_interface",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -248,7 +248,7 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-05-16T08:24:11.217771Z",
+  "generated": "2024-05-16T11:02:43.523930Z",
   "generator": "pub",
   "generatorVersion": "3.3.0"
 }
