@@ -14,7 +14,7 @@ dependencies:
   futil_platform_interface:
     git:
       url: https://github.com/ENUUI/futil.git
-      ref: b16eca1098e8f49297b4c5fe81572a94c2b07c76
+      ref: develop
       path: ./futil_platform_interface
 
 dev_dependencies:
