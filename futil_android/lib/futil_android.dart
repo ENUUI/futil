@@ -1,44 +1,50 @@
 import 'package:flutter/services.dart';
 import 'package:futil_platform_interface/futil_platform_interface.dart';
 
+import 'src/messages.g.dart';
+
 class FutilAndroid extends FtlInterface {
-  static const MethodChannel _channel = MethodChannel('github.enuui/futil');
+  final FutilAndroidApi _hostApi = FutilAndroidApi();
 
   static void registerWith() {
     FtlInterface.instance = FutilAndroid();
   }
 
   @override
-  Future<int> sdkInt() async {
-    final r = await _channel.invokeMethod<int>('skd_int');
-    if (r == null) {
-      throw PlatformException(
-        code: 'UNKNOWN',
-        message: 'Unable to get sdk int',
-      );
-    }
-    return r;
+  Future<int> sdkInt() {
+    return _hostApi.sdkInt();
   }
 
   @override
   Future<bool> isHarmonyOs() {
-    return Future.value(false);
+    return _hostApi.isHarmonyOs();
   }
 
   @override
   Future<OsVersion> osVersion() async {
-    final result = await _channel.invokeMapMethod('os_version');
-    if (result == null) {
+    final r = await _hostApi.osVersion();
+    if (r == null) {
       throw PlatformException(
-        code: 'UNKNOWN',
-        message: 'Unable to get os version',
-      );
+          code: 'null-error',
+          message:
+              'Host platform returned null value for non-null return value.');
     }
-    return OsVersion.fromJson(result.cast());
+
+    final os = r['os'];
+    final version = r['version'];
+
+    if (os == null || version == null) {
+      throw PlatformException(
+          code: 'null-error',
+          message:
+              'Host platform returned null value for non-null return value.');
+    }
+
+    return OsVersion(os: os, version: version);
   }
 
   @override
-  Future<String> deviceId() async {
-    return await _channel.invokeMethod('device_id');
+  Future<String> deviceId() {
+    return _hostApi.deviceId();
   }
 }

@@ -2,37 +2,24 @@ package com.example.futil_android
 
 import android.content.Context
 import android.content.SharedPreferences
-
+import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 import java.util.UUID
 
 /** FutilAndroidPlugin */
-class FutilAndroidPlugin : FlutterPlugin, MethodCallHandler {
-    
-    private lateinit var channel: MethodChannel
+class FutilAndroidPlugin : FlutterPlugin, FutilAndroidApi {
     private lateinit var context: Context
-
-    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "github.enuui/futil")
-        context = flutterPluginBinding.applicationContext
-        channel.setMethodCallHandler(this)
-    }
-
-    override fun onMethodCall(call: MethodCall, result: Result) {
-        when (call.method) {
-            "os_version" -> result.success(getOsVersion())
-            "device_id" -> result.success(getDeviceId())
-            "skd_int" -> result.success(android.os.Build.VERSION.SDK_INT)
-            else -> result.notImplemented()
-        }
-    }
+    private var pluginBinding: FlutterPlugin.FlutterPluginBinding? = null
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        pluginBinding = null
+        FutilAndroidApi.setUp(binding.binaryMessenger, null)
+    }
+
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        context = binding.applicationContext
+        pluginBinding = binding
+        FutilAndroidApi.setUp(binding.binaryMessenger, this)
     }
 
     private fun getOsVersion(): Map<String, String> {
@@ -66,4 +53,22 @@ class FutilAndroidPlugin : FlutterPlugin, MethodCallHandler {
             false
         }
     }
+
+    override fun sdkInt(callback: (Result<Long>) -> Unit) {
+        callback(Result.success(android.os.Build.VERSION.SDK_INT.toLong()))
+    }
+
+    override fun isHarmonyOs(callback: (Result<Boolean>) -> Unit) {
+        callback(Result.success(isHarmonyOS()))
+    }
+
+    override fun osVersion(callback: (Result<Map<String, String>?>) -> Unit) {
+        callback(Result.success(getOsVersion()))
+    }
+
+    override fun deviceId(callback: (Result<String>) -> Unit) {
+        callback(Result.success(getDeviceId()))
+    }
+
+
 }

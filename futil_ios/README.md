@@ -1,3 +1,3 @@
 ``` shell 
-$ dart run pigeon --input pigoens/messages.dart
+$ dart run pigeon --input pigeons/messages.dart
 ``` 

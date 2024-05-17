@@ -1,7 +1,8 @@
 name: futil_android
 description: "A new Flutter plugin project."
 version: 0.0.1
-homepage:
+homepage: ""
+publish_to: none
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -20,7 +21,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-
+  pigeon: ^18.0.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

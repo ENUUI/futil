@@ -111,9 +111,11 @@ packages:
   futil_platform_interface:
     dependency: transitive
     description:
-      path: "../../futil_platform_interface"
-      relative: true
-    source: path
+      path: futil_platform_interface
+      ref: develop
+      resolved-ref: "467bee83d013fb945c694d557d3c3ad9e2970913"
+      url: "https://github.com/ENUUI/futil.git"
+    source: git
     version: "0.0.1"
   integration_test:
     dependency: "direct dev"
