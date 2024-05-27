@@ -23,7 +23,6 @@ dependencies:
   flutter_spinkit: ^5.2.0
   extended_image: ^8.2.0
   image: ^4.1.7
-  image_picker: ^1.0.7
   path: ">=1.8.2 <2.0.0"
 
   futil_platform_interface:
