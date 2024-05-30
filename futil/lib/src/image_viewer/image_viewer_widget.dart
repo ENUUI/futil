@@ -180,7 +180,7 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
 
     Widget fileImage = ExtendedImage.file(
       file,
-      fit: BoxFit.contain,
+      fit: ImageViewerOpt.of(context)?.fit ?? BoxFit.cover,
       mode: ExtendedImageMode.gesture,
       constraints: BoxConstraints(
         maxWidth: Win.width(context),
