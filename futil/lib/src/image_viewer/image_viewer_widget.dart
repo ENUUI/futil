@@ -16,9 +16,17 @@ class ImageViewerOpt extends ChangeNotifier {
     }
   }
 
-  ImageViewerOpt({this.loadingIndicator});
+  ImageViewerOpt({
+    this.loadingIndicator,
+    this.fit = BoxFit.contain,
+    this.minScale = 0.9,
+    this.maxScale = 2.0,
+  });
 
   final Widget? loadingIndicator;
+  final BoxFit fit;
+  final double minScale;
+  final double maxScale;
 }
 
 class ImageViewerWidget<T> extends StatefulWidget {
@@ -59,7 +67,8 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
     if (resources is List<String>) {
       imageUrls.addAll(resources);
     } else if (resources is List<String?>) {
-      imageUrls.addAll(resources.where((e) => e != null && e.isNotEmpty).cast<String>());
+      imageUrls.addAll(
+          resources.where((e) => e != null && e.isNotEmpty).cast<String>());
     } else if (resources is List<File>) {
       imageFiles.addAll(resources);
     } else if (resources is List<File?>) {
@@ -75,7 +84,8 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
       count = imageFiles.length;
       initIndex = min(widget.initIndex, imageFiles.length - 1);
     }
-    _pageController = ExtendedPageController(initialPage: initIndex)..addListener(_onListenPageController);
+    _pageController = ExtendedPageController(initialPage: initIndex)
+      ..addListener(_onListenPageController);
     widget.onPageChanged?.call(initIndex, count);
   }
 
@@ -103,18 +113,22 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
     state.handleDoubleTap(scale: end, doubleTapPosition: pointerDownPosition);
   }
 
-  GestureConfig _initGestureConfigHandler(ExtendedImageState state) {
-    return GestureConfig(
-      minScale: 0.9,
-      animationMinScale: 0.7,
-      maxScale: 2.0,
-      animationMaxScale: 2.5,
-      speed: 1.0,
-      inertialSpeed: 100.0,
-      initialScale: 1.0,
-      inPageView: true,
-      initialAlignment: InitialAlignment.center,
-    );
+  GestureConfig Function(ExtendedImageState state) _initGestureConfigHandler(
+      BuildContext context) {
+    final opt = ImageViewerOpt.of(context);
+    return (ExtendedImageState state) {
+      return GestureConfig(
+        minScale: opt?.minScale ?? 0.9,
+        animationMinScale: 0.7,
+        maxScale: opt?.maxScale ?? 3.0,
+        animationMaxScale: 2.5,
+        speed: 1.0,
+        inertialSpeed: 100.0,
+        initialScale: 1.0,
+        inPageView: true,
+        initialAlignment: InitialAlignment.center,
+      );
+    };
   }
 
   Widget _buildWebImage(BuildContext context, int index) {
@@ -122,13 +136,13 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
 
     Widget webImage = ExtendedImage.network(
       url,
-      fit: BoxFit.contain,
+      fit: ImageViewerOpt.of(context)?.fit ?? BoxFit.cover,
       mode: ExtendedImageMode.gesture,
       constraints: BoxConstraints(
         maxWidth: Win.width(context),
         maxHeight: Win.height(context),
       ),
-      initGestureConfigHandler: _initGestureConfigHandler,
+      initGestureConfigHandler: _initGestureConfigHandler(context),
       onDoubleTap: _onDoubleTap,
       loadStateChanged: (state) {
         if (state.extendedImageLoadState == LoadState.completed) {
@@ -136,7 +150,8 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
         }
 
         if (state.extendedImageLoadState == LoadState.loading) {
-          return ImageViewerOpt.of(context)?.loadingIndicator ?? const SizedBox();
+          return ImageViewerOpt.of(context)?.loadingIndicator ??
+              const SizedBox();
         }
 
         return null;
@@ -168,7 +183,7 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
         maxWidth: Win.width(context),
         maxHeight: Win.height(context),
       ),
-      initGestureConfigHandler: _initGestureConfigHandler,
+      initGestureConfigHandler: _initGestureConfigHandler(context),
       onDoubleTap: _onDoubleTap,
     );
     if (indexHeroTag != null && initIndex == index) {
