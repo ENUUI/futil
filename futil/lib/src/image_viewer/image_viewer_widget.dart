@@ -21,12 +21,15 @@ class ImageViewerOpt extends ChangeNotifier {
     this.fit = BoxFit.contain,
     this.minScale = 0.9,
     this.maxScale = 2.0,
-  });
+    double? animationMaxScale,
+  })  : assert(animationMaxScale == null || animationMaxScale >= maxScale),
+        animationMaxScale = animationMaxScale ?? maxScale;
 
   final Widget? loadingIndicator;
   final BoxFit fit;
   final double minScale;
   final double maxScale;
+  final double animationMaxScale;
 }
 
 class ImageViewerWidget<T> extends StatefulWidget {
@@ -120,8 +123,8 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
       return GestureConfig(
         minScale: opt?.minScale ?? 0.9,
         animationMinScale: 0.7,
-        maxScale: opt?.maxScale ?? 3.0,
-        animationMaxScale: 2.5,
+        maxScale: opt?.maxScale ?? 2.0,
+        animationMaxScale: opt?.animationMaxScale ?? 2.5,
         speed: 1.0,
         inertialSpeed: 100.0,
         initialScale: 1.0,
