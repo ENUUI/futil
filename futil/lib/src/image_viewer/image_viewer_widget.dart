@@ -20,6 +20,7 @@ class ImageViewerOpt extends ChangeNotifier {
     this.loadingIndicator,
     this.fit = BoxFit.contain,
     this.minScale = 0.9,
+    this.initScale = 1.0,
     this.maxScale = 2.0,
     double? animationMaxScale,
   })  : assert(animationMaxScale == null || animationMaxScale >= maxScale),
@@ -29,6 +30,7 @@ class ImageViewerOpt extends ChangeNotifier {
   final BoxFit fit;
   final double minScale;
   final double maxScale;
+  final double initScale;
   final double animationMaxScale;
 }
 
@@ -127,7 +129,7 @@ class _ImageViewerWidgetState extends State<ImageViewerWidget> {
         animationMaxScale: opt?.animationMaxScale ?? 2.5,
         speed: 1.0,
         inertialSpeed: 100.0,
-        initialScale: 1.0,
+        initialScale: opt?.initScale ?? 1.0,
         inPageView: true,
         initialAlignment: InitialAlignment.center,
       );
